@@ -1,7 +1,10 @@
 package module6;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import de.fhpotsdam.unfolding.UnfoldingMap;
@@ -36,7 +39,7 @@ public class EarthquakeCityMap extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	// IF YOU ARE WORKING OFFILINE, change the value of this variable to true
-	private static final boolean offline = false;
+	private static final boolean offline = true;
 	
 	/** This is where to find the local tiles, for working without an Internet connection */
 	public static String mbTilesString = "blankLight-1-3.mbtiles";
@@ -82,7 +85,7 @@ public class EarthquakeCityMap extends PApplet {
 		// FOR TESTING: Set earthquakesURL to be one of the testing files by uncommenting
 		// one of the lines below.  This will work whether you are online or offline
 		//earthquakesURL = "test1.atom";
-		//earthquakesURL = "test2.atom";
+		earthquakesURL = "test2.atom";
 		
 		// Uncomment this line to take the quiz
 		//earthquakesURL = "quiz2.atom";
@@ -116,7 +119,8 @@ public class EarthquakeCityMap extends PApplet {
 	    }
 
 	    // could be used for debugging
-	    printQuakes();
+//	    printQuakes();
+	    sortAndPrint(5);
 	 		
 	    // (3) Add markers to map
 	    //     NOTE: Country markers are not added to the map.  They are used
@@ -137,7 +141,19 @@ public class EarthquakeCityMap extends PApplet {
 	
 	
 	// TODO: Add the method:
-	//   private void sortAndPrint(int numToPrint)
+	   private void sortAndPrint(int numToPrint) {
+//		   EarthquakeMarker[] earthquakes = (EarthquakeMarker[]) quakeMarkers.toArray();
+		   List<EarthquakeMarker> eq = new ArrayList<EarthquakeMarker>();
+//		   eq = (ArrayList<EarthquakeMarker>) Arrays.asList(earthquakes);
+		   
+		   eq.addAll((Collection<? extends EarthquakeMarker>) quakeMarkers);
+		   Collections.sort(eq);
+		   
+		   for (int i = eq.size()-1; i >= (eq.size() - numToPrint); i--) {
+			   
+			   System.out.println(eq.get(i));
+		   }
+	   }
 	// and then call that method from setUp
 	
 	/** Event handler that gets called automatically when the 

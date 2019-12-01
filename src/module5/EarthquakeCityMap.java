@@ -130,11 +130,21 @@ public class EarthquakeCityMap extends PApplet {
 	public void mouseMoved()
 	{
 		// clear the last selection
-		if (lastSelected != null) {
-			lastSelected.setSelected(false);
-			lastSelected = null;
+//		if (lastSelected != null) {
+//			lastSelected.setSelected(false);
+//			lastSelected = null;
+//		
+//		}
 		
+		List<Marker> newList = new ArrayList<>();
+		newList.addAll(quakeMarkers);
+		newList.addAll(cityMarkers);
+		
+		for (Marker marker : newList) {
+				marker.setSelected(false);
 		}
+		
+		
 		selectMarkerIfHover(quakeMarkers);
 		selectMarkerIfHover(cityMarkers);
 	}
@@ -145,10 +155,12 @@ public class EarthquakeCityMap extends PApplet {
 	// 
 	private void selectMarkerIfHover(List<Marker> markers)
 	{
+		
 		for (Marker marker : markers) {
 			if (marker.isInside(map, mouseX, mouseY)) {
 				marker.setSelected(true);
 //				lastSelected = (CommonMarker) marker;
+				lastClicked = (CommonMarker) marker;
 			}
 		}
 		// TODO: Implement this method
@@ -162,11 +174,51 @@ public class EarthquakeCityMap extends PApplet {
 	@Override
 	public void mouseClicked()
 	{
+		if (lastClicked != null) {
+			unhideMarkers();
+			lastClicked = null;
+		}
+		
+		selectMarkerIfHover(quakeMarkers);
+		selectMarkerIfHover(cityMarkers);
+		
+		if (lastClicked != null) {
+			hideMarkers();
+		}
 		// TODO: Implement this method
 		// Hint: You probably want a helper method or two to keep this code
 		// from getting too long/disorganized
 	}
 	
+	private void hideMarkers() {
+		if (lastClicked instanceof CityMarker) {
+		
+			for(Marker city : cityMarkers) {
+				city.setHidden(true);
+			}
+			for(Marker quake : quakeMarkers) {
+				
+				if (quake.getDistanceTo(lastClicked.getLocation()) > ((EarthquakeMarker) quake).threatCircle()) {
+					quake.setHidden(true);
+				}
+			}
+			
+		} else if (lastClicked instanceof EarthquakeMarker) {
+		
+			for(Marker quake : quakeMarkers) {
+				quake.setHidden(true);
+			}
+			for(Marker city : cityMarkers) {
+				double dist = lastClicked.getDistanceTo(city.getLocation());
+				double circ = ((EarthquakeMarker) lastClicked).threatCircle();
+				if ( dist > circ) {
+					city.setHidden(true);
+				}
+			}
+			
+		}
+		lastClicked.setHidden(false);
+	}
 	
 	// loop over and unhide all markers
 	private void unhideMarkers() {
