@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.data.Feature;
@@ -18,6 +20,7 @@ import de.fhpotsdam.unfolding.marker.MultiMarker;
 import de.fhpotsdam.unfolding.providers.Google;
 import de.fhpotsdam.unfolding.providers.MBTilesMapProvider;
 import de.fhpotsdam.unfolding.utils.MapUtils;
+import module6.CityMarker;
 import parsing.ParseFeed;
 import processing.core.PApplet;
 
@@ -45,7 +48,6 @@ public class EarthquakeCityMap extends PApplet {
 	public static String mbTilesString = "blankLight-1-3.mbtiles";
 	
 	
-
 	//feed with magnitude 2.5+ Earthquakes
 	private String earthquakesURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.atom";
 	
@@ -60,7 +62,7 @@ public class EarthquakeCityMap extends PApplet {
 	private List<Marker> cityMarkers;
 	// Markers for each earthquake
 	private List<Marker> quakeMarkers;
-
+	
 	// A List of country markers
 	private List<Marker> countryMarkers;
 	
@@ -128,7 +130,6 @@ public class EarthquakeCityMap extends PApplet {
 	    map.addMarkers(quakeMarkers);
 	    map.addMarkers(cityMarkers);
 	    
-	    
 	}  // End setup
 	
 	
@@ -136,6 +137,10 @@ public class EarthquakeCityMap extends PApplet {
 		background(0);
 		map.draw();
 		addKey();
+		
+		if (lastClicked != null && lastClicked instanceof CityMarker) {
+			cityInfo();
+		}
 		
 	}
 	
@@ -217,6 +222,9 @@ public class EarthquakeCityMap extends PApplet {
 	// and respond appropriately
 	private void checkCitiesForClick()
 	{
+		if (lastClicked instanceof CityMarker) {
+			
+		}
 		if (lastClicked != null) return;
 		// Loop over the earthquake markers to see if one of them is selected
 		for (Marker marker : cityMarkers) {
@@ -339,9 +347,75 @@ public class EarthquakeCityMap extends PApplet {
 		line(centerx-8, centery-8, centerx+8, centery+8);
 		line(centerx-8, centery+8, centerx+8, centery-8);
 		
-		
 	}
 
+	private void cityInfo() {
+		String age;
+		String lastEarthquakes = "";
+		Map<Integer, String> nearbyEarthquakes = new HashMap<Integer, String>();
+		int qNearbyEarthquakes = 0;
+		double avMag = 0;
+		for (Marker marker : quakeMarkers) {
+			EarthquakeMarker quakeMarker = (EarthquakeMarker)marker;
+			if (!quakeMarker.isHidden()) {
+				avMag += quakeMarker.getMagnitude();
+				qNearbyEarthquakes ++;
+				age = quakeMarker.getStringProperty("age");
+				switch (age) {
+				case "Past Hour":
+					nearbyEarthquakes.put(1, quakeMarker.getTitle());
+					break;
+
+				case "Past Day":
+					nearbyEarthquakes.put(2, quakeMarker.getTitle());
+					break;
+				
+				case "Past Week":
+					nearbyEarthquakes.put(3, quakeMarker.getTitle());
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		if (qNearbyEarthquakes > 0) {
+			
+			lastEarthquakes = nearbyEarthquakes.getOrDefault(1, nearbyEarthquakes.getOrDefault(2, nearbyEarthquakes.get(3)));
+			avMag /= qNearbyEarthquakes;
+		}
+		
+		// Remember you can use Processing's graphics methods here
+		fill(255, 250, 240);
+		
+		int xbase = 25;
+		int ybase = 350;
+		
+		rect(xbase, ybase, 150, 250);
+		
+		fill(0);
+		textAlign(LEFT, CENTER);
+		textSize(12);
+		text("City info", xbase+45, ybase+25);
+		
+		fill(150, 30, 30);
+		int tri_xbase = xbase + 15;
+		int tri_ybase = ybase + 50;
+		
+		fill(0, 0, 0);
+		textAlign(LEFT, CENTER);
+		text("Nearby earthquakes:", tri_xbase, tri_ybase);
+		
+		text(qNearbyEarthquakes, tri_xbase + 50, ybase+70);
+		
+		text("Average magnitude", tri_xbase, ybase+90);
+		
+		text(String.format("%.2f", avMag), tri_xbase + 50, ybase+110);
+		
+		text("Recent earthquake", tri_xbase, ybase+130);
+		
+		text(lastEarthquakes, tri_xbase, ybase+150, 100, 80);
+		
+	}
 	
 	
 	// Checks whether this quake occurred on land.  If it did, it sets the 
