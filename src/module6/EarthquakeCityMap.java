@@ -13,10 +13,12 @@ import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.data.Feature;
 import de.fhpotsdam.unfolding.data.GeoJSONReader;
 import de.fhpotsdam.unfolding.data.PointFeature;
+import de.fhpotsdam.unfolding.data.ShapeFeature;
 import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.marker.AbstractShapeMarker;
 import de.fhpotsdam.unfolding.marker.Marker;
 import de.fhpotsdam.unfolding.marker.MultiMarker;
+import de.fhpotsdam.unfolding.marker.SimpleLinesMarker;
 import de.fhpotsdam.unfolding.providers.Google;
 import de.fhpotsdam.unfolding.providers.MBTilesMapProvider;
 import de.fhpotsdam.unfolding.utils.MapUtils;
@@ -69,6 +71,11 @@ public class EarthquakeCityMap extends PApplet {
 	// NEW IN MODULE 5
 	private CommonMarker lastSelected;
 	private CommonMarker lastClicked;
+	
+	
+	private List<Marker> airportList;
+	List<Marker> routeList;
+	
 	
 	public void setup() {		
 		// (1) Initializing canvas and map tiles
@@ -130,6 +137,35 @@ public class EarthquakeCityMap extends PApplet {
 	    map.addMarkers(quakeMarkers);
 	    map.addMarkers(cityMarkers);
 	    
+	    
+	    
+	    
+	    // get features from airport data
+ 		List<PointFeature> features = ParseFeed.parseAirports(this, "airports.dat");
+ 		
+ 		// list for markers, hashmap for quicker access when matching with routes
+ 		airportList = new ArrayList<Marker>();
+ 		HashMap<Integer, Location> airports = new HashMap<Integer, Location>();
+ 		
+ 		// create markers from features
+ 		for(PointFeature feature : features) {
+ 			AirportMarker m = new AirportMarker(feature);
+ 	
+// 			m.setRadius(5);
+ 			airportList.add(m);
+ 			
+ 			// put airport in hashmap with OpenFlights unique id for key
+ 			airports.put(Integer.parseInt(feature.getId()), feature.getLocation());
+ 		
+ 		}
+	 		
+	 		
+// 		map.addMarkers(airportList);
+	 		
+ 		// get features from airport data
+ 		HashMap<String, Float> urbanPopulation = ParseFeed.loadUrbanPopulationCSV(this, "urbanPopulations.csv");
+	 		
+	    
 	}  // End setup
 	
 	
@@ -175,6 +211,7 @@ public class EarthquakeCityMap extends PApplet {
 		}
 		selectMarkerIfHover(quakeMarkers);
 		selectMarkerIfHover(cityMarkers);
+		selectMarkerIfHover(airportList);
 		//loop();
 	}
 	
