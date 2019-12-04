@@ -301,7 +301,7 @@ public class ParseFeed {
 //				
 //				// check if value exists for year
 //				if(!columns[i].equals("")) {
-					urbanPopMap.put(columns[0], Float.parseFloat(columns[columns.length - 2]));
+					urbanPopMap.put(columns[0], Float.parseFloat(columns[columns.length]));
 //					
 //					// break once most recent data is found
 //					break;
