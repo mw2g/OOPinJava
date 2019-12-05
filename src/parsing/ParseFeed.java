@@ -281,32 +281,14 @@ public class ParseFeed {
 	public static HashMap<String, Float> loadUrbanPopulationCSV(PApplet p, String fileName) {
 		// HashMap key: country ID and  data: lifeExp at birth
 		HashMap<String, Float> urbanPopMap = new HashMap<String, Float>();
-		
 		// get lines of csv file
 		String[] rows = p.loadStrings(fileName);
 		
 		// Reads country name and population density value from CSV row
 		for (String row : rows) {
-			// split row by commas not in quotations
 			String[] columns = row.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
 			
-			// check if there is any life expectancy data from any year, get most recent
-			/*
-			 * EXTENSION: Add code to also get the year the data is from.
-			 * You may want to use a list of Floats as the  values for the HashMap
-			 * and store the year as the second value. (There are many other ways to do this)
-			 */
-			//
-//			for(int i = columns.length - 1; i > 4; i--) {
-//				
-//				// check if value exists for year
-//				if(!columns[i].equals("")) {
-					urbanPopMap.put(columns[0], Float.parseFloat(columns[columns.length]));
-//					
-//					// break once most recent data is found
-//					break;
-//				}
-//			}
+			urbanPopMap.put(columns[1], Float.parseFloat(columns[columns.length-1]));
 			
 		}
 		int i = 0;

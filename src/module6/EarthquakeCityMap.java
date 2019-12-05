@@ -163,7 +163,7 @@ public class EarthquakeCityMap extends PApplet {
 // 		map.addMarkers(airportList);
 	 		
  		// get features from airport data
- 		HashMap<String, Float> urbanPopulation = ParseFeed.loadUrbanPopulationCSV(this, "urbanPopulations.csv");
+ 		
 	 		
 	    
 	}  // End setup
