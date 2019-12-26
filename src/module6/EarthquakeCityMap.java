@@ -97,7 +97,7 @@ public class EarthquakeCityMap extends PApplet {
 		earthquakesURL = "test2.atom";
 		
 		// Uncomment this line to take the quiz
-		//earthquakesURL = "quiz2.atom";
+		earthquakesURL = "quiz2.atom";
 		
 		
 		// (2) Reading in earthquake data and geometric properties
@@ -129,7 +129,7 @@ public class EarthquakeCityMap extends PApplet {
 
 	    // could be used for debugging
 //	    printQuakes();
-	    sortAndPrint(5);
+	    sortAndPrint(15);
 	 		
 	    // (3) Add markers to map
 	    //     NOTE: Country markers are not added to the map.  They are used
@@ -168,16 +168,36 @@ public class EarthquakeCityMap extends PApplet {
 	    
 	}  // End setup
 	
+	private ArrayList<Long> mes = new ArrayList<Long>();
+	private Long start, end;
+	private Long sum = (long) 0;
+	private int iterat = 0;
 	
+	@SuppressWarnings("null")
 	public void draw() {
 		background(0);
 		map.draw();
 		addKey();
 		
-		if (lastClicked != null && lastClicked instanceof CityMarker) {
-			cityInfo();
-		}
 		
+		if (lastClicked != null && lastClicked instanceof CityMarker) {
+			start = System.nanoTime();
+			cityInfo();
+			
+			end = System.nanoTime();
+			mes.add(end - start);
+			if (iterat == 100) {
+				for (Long m : mes) {
+					sum += m;
+				}
+				System.out.println(sum / 100);
+				iterat = 0;
+				sum = (long) 0;
+				mes.clear();
+			}
+//			System.out.println(end - start);
+			iterat ++;
+		}
 	}
 	
 	
@@ -387,6 +407,7 @@ public class EarthquakeCityMap extends PApplet {
 	}
 
 	private void cityInfo() {
+		
 		String age;
 		String lastEarthquakes = "";
 		Map<Integer, String> nearbyEarthquakes = new HashMap<Integer, String>();
@@ -420,6 +441,7 @@ public class EarthquakeCityMap extends PApplet {
 			lastEarthquakes = nearbyEarthquakes.getOrDefault(1, nearbyEarthquakes.getOrDefault(2, nearbyEarthquakes.get(3)));
 			avMag /= qNearbyEarthquakes;
 		}
+		
 		
 		// Remember you can use Processing's graphics methods here
 		fill(255, 250, 240);
